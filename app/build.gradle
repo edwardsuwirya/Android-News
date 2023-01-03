@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace 'com.enigmacamp.simple_news'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.enigmacamp.simple_news"
         minSdk 27
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -32,6 +32,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+    viewBinding {
+        enabled = true
     }
 }
 

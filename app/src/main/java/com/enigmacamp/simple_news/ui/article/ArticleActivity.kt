@@ -12,18 +12,25 @@ import com.enigmacamp.simple_news.R
 import com.enigmacamp.simple_news.data.api.response.Article
 import com.enigmacamp.simple_news.data.repository.NewsRepository
 import com.enigmacamp.simple_news.data.repository.NewsRepositoryImpl
+import com.enigmacamp.simple_news.databinding.ActivityArticleBinding
+import com.enigmacamp.simple_news.databinding.ActivityMainBinding
 import com.enigmacamp.simple_news.ui.article.viewadapter.ArticleAdapter
 import com.enigmacamp.simple_news.ui.article.viewadapter.ArticleCellClickListener
 
 class ArticleActivity : AppCompatActivity(), ArticleCellClickListener {
     private lateinit var newsRepository: NewsRepository
     private lateinit var viewModel: ArticleViewModel
-    private lateinit var rvArticle: RecyclerView
+
+    private lateinit var binding: ActivityArticleBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_article)
-        rvArticle = findViewById(R.id.rv_articles)
-        rvArticle.layoutManager = LinearLayoutManager(this)
+        binding = ActivityArticleBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.apply {
+            rvArticles.layoutManager = LinearLayoutManager(this@ArticleActivity)
+        }
+
         newsRepository = NewsRepositoryImpl()
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -41,7 +48,7 @@ class ArticleActivity : AppCompatActivity(), ArticleCellClickListener {
             it?.let {
                 val adapter =
                     ArticleAdapter(it, this@ArticleActivity)
-                rvArticle.adapter = adapter
+                binding.rvArticles.adapter = adapter
             }
         }
     }
