@@ -2,14 +2,12 @@ package com.enigmacamp.simple_news.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
-import com.enigmacamp.simple_news.R
 import com.enigmacamp.simple_news.databinding.ActivityMainBinding
 import com.enigmacamp.simple_news.ui.newssource.NewsSourceActivity
+import dagger.android.support.DaggerAppCompatActivity
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : DaggerAppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -8,8 +8,9 @@ import com.enigmacamp.simple_news.data.api.response.Source
 import com.enigmacamp.simple_news.data.repository.NewsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class NewsSourceViewModel(private val newsRepository: NewsRepository) : ViewModel() {
+class NewsSourceViewModel @Inject constructor(private val newsRepository: NewsRepository) : ViewModel() {
     private var _sources = MutableLiveData<List<Source>>()
     val sources: LiveData<List<Source>> get() = _sources
 
