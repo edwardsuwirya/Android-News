@@ -6,11 +6,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.enigmacamp.simple_news.R
 import com.enigmacamp.simple_news.data.api.response.Source
 
-class NewsSourceViewAdapter(
-    private val sources: List<Source>,
-    private val cellClick: NewsSourceCellClickListener
-) :
+class NewsSourceViewAdapter(private val cellClick: NewsSourceCellClickListener) :
     RecyclerView.Adapter<NewsSourceViewHolder>() {
+    private var sources: MutableList<Source> = mutableListOf()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsSourceViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.sources_view_holder, parent, false)
@@ -28,5 +27,10 @@ class NewsSourceViewAdapter(
 
     override fun getItemCount(): Int {
         return sources.size
+    }
+
+    fun submitData(newSource: List<Source>) {
+        sources.clear()
+        sources.addAll(newSource)
     }
 }

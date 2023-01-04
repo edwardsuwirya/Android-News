@@ -2,7 +2,6 @@ package com.enigmacamp.simple_news.ui.newssource
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -20,12 +19,13 @@ class NewsSourceActivity : AppCompatActivity(), NewsSourceCellClickListener {
     private lateinit var newsRepository: NewsRepository
     private lateinit var viewModel: NewsSourceViewModel
     private lateinit var rvSources: RecyclerView
-
+    private val adapter = NewsSourceViewAdapter(this)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_news_source)
         rvSources = findViewById(R.id.rv_sources)
         rvSources.layoutManager = LinearLayoutManager(this)
+        rvSources.adapter = adapter
         newsRepository = NewsRepositoryImpl()
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -33,19 +33,17 @@ class NewsSourceActivity : AppCompatActivity(), NewsSourceCellClickListener {
             }
         })[NewsSourceViewModel::class.java]
         subscribe()
-        intent.getStringExtra("category")?.let {
-            Log.d("Intent Data", it)
-            viewModel.getNewsSourceByCategory(it)
-        }
     }
 
     private fun subscribe() {
-        viewModel.sources.observe(this) {
-            it?.let {
-                val adapter =
-                    NewsSourceViewAdapter(it, this@NewsSourceActivity)
-                rvSources.adapter = adapter
+        intent.getStringExtra("category")?.let { source ->
+            viewModel.sources.observe(this@NewsSourceActivity) {
+                it?.let {
+                    adapter.submitData(it)
+                    adapter.notifyDataSetChanged()
+                }
             }
+            viewModel.getNewsSourceByCategory(source)
         }
     }
 
