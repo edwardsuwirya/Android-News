@@ -1,19 +1,15 @@
 package com.enigmacamp.simple_news.ui.newssource.viewadapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.enigmacamp.simple_news.R
 import com.enigmacamp.simple_news.data.api.response.Source
-import com.enigmacamp.simple_news.databinding.ArticleViewHolderBinding
 import com.enigmacamp.simple_news.databinding.SourcesViewHolderBinding
 
-class NewsSourceViewAdapter(
-    private val sources: List<Source>,
-    private val cellClick: NewsSourceCellClickListener
-) :
+class NewsSourceViewAdapter(private val cellClick: NewsSourceCellClickListener) :
     RecyclerView.Adapter<NewsSourceViewAdapter.ViewHolder>() {
+    private var sources: MutableList<Source> = mutableListOf()
+
     inner class ViewHolder(val binding: SourcesViewHolderBinding) :
         RecyclerView.ViewHolder(binding.root)
 
@@ -38,5 +34,10 @@ class NewsSourceViewAdapter(
 
     override fun getItemCount(): Int {
         return sources.size
+    }
+
+    fun submitData(newSource: List<Source>) {
+        sources.clear()
+        sources.addAll(newSource)
     }
 }

@@ -6,21 +6,20 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.enigmacamp.simple_news.R
 import com.enigmacamp.simple_news.data.api.response.Article
 import com.enigmacamp.simple_news.data.repository.NewsRepository
 import com.enigmacamp.simple_news.data.repository.NewsRepositoryImpl
 import com.enigmacamp.simple_news.databinding.ActivityArticleBinding
-import com.enigmacamp.simple_news.databinding.ActivityMainBinding
 import com.enigmacamp.simple_news.ui.article.viewadapter.ArticleAdapter
 import com.enigmacamp.simple_news.ui.article.viewadapter.ArticleCellClickListener
+import kotlinx.coroutines.launch
 
 class ArticleActivity : AppCompatActivity(), ArticleCellClickListener {
     private lateinit var newsRepository: NewsRepository
     private lateinit var viewModel: ArticleViewModel
-
+    private val adapter = ArticleAdapter(this)
     private lateinit var binding: ActivityArticleBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +28,7 @@ class ArticleActivity : AppCompatActivity(), ArticleCellClickListener {
         setContentView(binding.root)
         binding.apply {
             rvArticles.layoutManager = LinearLayoutManager(this@ArticleActivity)
+            rvArticles.adapter = adapter
         }
 
         newsRepository = NewsRepositoryImpl()
@@ -38,17 +38,17 @@ class ArticleActivity : AppCompatActivity(), ArticleCellClickListener {
             }
         })[ArticleViewModel::class.java]
         subscribe()
-        intent.getStringExtra("sourceId")?.let {
-            viewModel.getArticleBySource(it)
-        }
     }
 
     private fun subscribe() {
-        viewModel.sources.observe(this) {
-            it?.let {
-                val adapter =
-                    ArticleAdapter(it, this@ArticleActivity)
-                binding.rvArticles.adapter = adapter
+        intent.getStringExtra("sourceId")?.let { source ->
+            lifecycleScope.launch {
+                viewModel.getArticleBySource(source).observe(this@ArticleActivity) {
+                    it?.let {
+                        adapter.submitData(lifecycle, it)
+                        adapter.notifyDataSetChanged()
+                    }
+                }
             }
         }
     }
