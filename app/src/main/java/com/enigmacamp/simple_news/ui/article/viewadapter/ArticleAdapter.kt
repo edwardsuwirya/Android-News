@@ -2,13 +2,17 @@ package com.enigmacamp.simple_news.ui.article.viewadapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.enigmacamp.simple_news.data.api.response.Article
 import com.enigmacamp.simple_news.databinding.ArticleViewHolderBinding
 
 class ArticleAdapter(
-    private val articles: List<Article>, private val cellClickListener: ArticleCellClickListener
-) : RecyclerView.Adapter<ArticleAdapter.ViewHolder>() {
+    private val cellClickListener: ArticleCellClickListener
+) :
+    PagingDataAdapter<Article, ArticleAdapter.ViewHolder>(ArticleComparator) {
+
     inner class ViewHolder(val binding: ArticleViewHolderBinding) :
         RecyclerView.ViewHolder(binding.root)
 
@@ -21,7 +25,7 @@ class ArticleAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val article = articles[position]
+        val article = getItem(position)!!
         holder.binding.apply {
             tvArticleTitle.text = article.title
             tvArticleAuthor.text = article.author
@@ -32,7 +36,13 @@ class ArticleAdapter(
         }
     }
 
-    override fun getItemCount(): Int {
-        return articles.size
+    object ArticleComparator : DiffUtil.ItemCallback<Article>() {
+        override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
+            return oldItem.title == newItem.title
+        }
+
+        override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
+            return oldItem == newItem
+        }
     }
 }

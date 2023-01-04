@@ -2,13 +2,11 @@ package com.enigmacamp.simple_news.ui.newssource
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.enigmacamp.simple_news.R
 import com.enigmacamp.simple_news.data.api.response.Source
+import com.enigmacamp.simple_news.databinding.ActivityNewsSourceBinding
 import com.enigmacamp.simple_news.ui.article.ArticleActivity
 import com.enigmacamp.simple_news.ui.newssource.viewadapter.NewsSourceCellClickListener
 import com.enigmacamp.simple_news.ui.newssource.viewadapter.NewsSourceViewAdapter
@@ -18,19 +16,19 @@ import javax.inject.Inject
 class NewsSourceActivity : DaggerAppCompatActivity(), NewsSourceCellClickListener {
     @Inject
     lateinit var viewModel: NewsSourceViewModel
-    private lateinit var rvSources: RecyclerView
+    private val adapter = NewsSourceViewAdapter(this)
+    private lateinit var binding: ActivityNewsSourceBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_news_source)
-        rvSources = findViewById(R.id.rv_sources)
-        rvSources.layoutManager = LinearLayoutManager(this)
+        binding = ActivityNewsSourceBinding.inflate(layoutInflater)
+        binding.apply {
+            rvSources.layoutManager = LinearLayoutManager(this@NewsSourceActivity)
+            rvSources.adapter = adapter
+        }
+        setContentView(binding.root)
         initViewModel()
         subscribe()
-        intent.getStringExtra("category")?.let {
-            Log.d("Intent Data", it)
-            viewModel.getNewsSourceByCategory(it)
-        }
     }
 
     private fun initViewModel() {
@@ -42,12 +40,14 @@ class NewsSourceActivity : DaggerAppCompatActivity(), NewsSourceCellClickListene
     }
 
     private fun subscribe() {
-        viewModel.sources.observe(this) {
-            it?.let {
-                val adapter =
-                    NewsSourceViewAdapter(it, this@NewsSourceActivity)
-                rvSources.adapter = adapter
+        intent.getStringExtra("category")?.let { source ->
+            viewModel.sources.observe(this@NewsSourceActivity) {
+                it?.let {
+                    adapter.submitData(it)
+                    adapter.notifyDataSetChanged()
+                }
             }
+            viewModel.getNewsSourceByCategory(source)
         }
     }
 

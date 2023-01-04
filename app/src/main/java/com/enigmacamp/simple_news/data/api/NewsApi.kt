@@ -7,14 +7,16 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface NewsApi {
-    @GET("top-headlines")
+    @GET("everything")
     suspend fun getTopHeadlineNews(
-        @Query("sources") source: String
+        @Query("sources") source: String,
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int
     ): Response<NewsResponse>
 
     @GET("sources")
     suspend fun getSourceByCategory(
-        @Query("category") category: String
+        @Query("category") category: String,
     ): Response<NewsSourceResponse>
 
 }
