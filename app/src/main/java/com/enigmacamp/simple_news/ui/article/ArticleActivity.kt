@@ -42,9 +42,6 @@ class ArticleActivity : DaggerAppCompatActivity(), ArticleCellClickListener {
         }
         initViewModel()
         subscribe()
-        intent.getStringExtra("sourceId")?.let { source ->
-            viewModel.getArticleBySource(source)
-        }
     }
 
     private fun initViewModel() {
