@@ -1,5 +1,6 @@
 package com.enigmacamp.simple_news.di.app
 
+import com.enigmacamp.simple_news.BuildConfig
 import com.enigmacamp.simple_news.data.api.NewsApi
 import com.enigmacamp.simple_news.data.api.interceptor.NewsApiKeyInterceptor
 import dagger.Module
@@ -23,7 +24,7 @@ class AppModule {
     @Provides
     fun provideRetrofitInstance(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://newsapi.org/v2/")
+            .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(MoshiConverterFactory.create())
             .client(okHttpClient)
             .build()
