@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/categoryFragment">
+
+    <fragment
+        android:id="@+id/categoryFragment"
+        android:name="com.enigmacamp.simple_news.ui.category.CategoryFragment"
+        android:label="Simple News"
+        tools:layout="@layout/fragment_category">
+        <action
+            android:id="@+id/action_categoryFragment_to_newsSourceFragment"
+            app:destination="@id/newsSourceFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newsSourceFragment"
+        android:name="com.enigmacamp.simple_news.ui.newssource.NewsSourceFragment"
+        android:label="News Source"
+        tools:layout="@layout/fragment_news_source">
+        <action
+            android:id="@+id/action_newsSourceFragment_to_articleFragment"
+            app:destination="@id/articleFragment" />
+        <argument
+            android:name="category"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/articleFragment"
+        android:name="com.enigmacamp.simple_news.ui.article.ArticleFragment"
+        android:label="Article"
+        tools:layout="@layout/fragment_article">
+        <argument
+            android:name="sourceId"
+            app:argType="string" />
+    </fragment>
+</navigation>

@@ -1,37 +1,30 @@
 package com.enigmacamp.simple_news.ui
 
-import android.content.Intent
 import android.os.Bundle
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupActionBarWithNavController
+import com.enigmacamp.simple_news.R
 import com.enigmacamp.simple_news.databinding.ActivityMainBinding
-import com.enigmacamp.simple_news.ui.newssource.NewsSourceActivity
 import dagger.android.support.DaggerAppCompatActivity
 
 
 class MainActivity : DaggerAppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
 
-        val i = Intent(this, NewsSourceActivity::class.java)
-        binding.apply {
-            btnBusiness.setOnClickListener {
-                i.putExtra("category", "business")
-                startActivity(i)
-            }
-            btnEntertainment.setOnClickListener {
-                i.putExtra("category", "entertainment")
-                startActivity(i)
-            }
-            btnGeneral.setOnClickListener {
-                i.putExtra("category", "general")
-                startActivity(i)
-            }
-        }
-
+        setupActionBarWithNavController(navController)
     }
 
-
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
+    }
 }
