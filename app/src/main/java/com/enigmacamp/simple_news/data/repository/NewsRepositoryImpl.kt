@@ -25,14 +25,17 @@ class NewsRepositoryImpl @Inject constructor(private val newsApi: NewsApi) : New
     override suspend fun getNewsSourceByCategory(
         category: String
     ): List<Source> {
-        val response =
-            newsApi.getSourceByCategory(category)
-        if (response.isSuccessful) {
-            response.body()?.let {
-                return response.body()!!.sources
+        try {
+            val response =
+                newsApi.getSourceByCategory(category)
+            if (response.isSuccessful) {
+                response.body().let {
+                    return response.body()!!.sources
+                }
             }
             return emptyList()
+        } catch (e: Exception) {
+            throw Exception("Server Error")
         }
-        return emptyList()
     }
 }

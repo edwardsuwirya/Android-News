@@ -2,6 +2,7 @@ package com.enigmacamp.simple_news.ui.newssource
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -10,6 +11,7 @@ import com.enigmacamp.simple_news.databinding.ActivityNewsSourceBinding
 import com.enigmacamp.simple_news.ui.article.ArticleActivity
 import com.enigmacamp.simple_news.ui.newssource.viewadapter.NewsSourceCellClickListener
 import com.enigmacamp.simple_news.ui.newssource.viewadapter.NewsSourceViewAdapter
+import com.enigmacamp.simple_news.utils.ViewState
 import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
 
@@ -29,6 +31,9 @@ class NewsSourceActivity : DaggerAppCompatActivity(), NewsSourceCellClickListene
         setContentView(binding.root)
         initViewModel()
         subscribe()
+        intent.getStringExtra("category")?.let { source ->
+            viewModel.getNewsSourceByCategory(source)
+        }
     }
 
     private fun initViewModel() {
@@ -40,14 +45,25 @@ class NewsSourceActivity : DaggerAppCompatActivity(), NewsSourceCellClickListene
     }
 
     private fun subscribe() {
-        intent.getStringExtra("category")?.let { source ->
-            viewModel.sources.observe(this@NewsSourceActivity) {
-                it?.let {
-                    adapter.submitData(it)
-                    adapter.notifyDataSetChanged()
+
+        viewModel.sources.observe(this@NewsSourceActivity) {
+            it?.let {
+                when (it) {
+                    is ViewState.Loading -> {
+                        binding.pbSourceLoading.visibility = View.VISIBLE
+                    }
+                    is ViewState.Success -> {
+                        it.data?.let { data ->
+                            adapter.submitData(data)
+                            adapter.notifyDataSetChanged()
+                        }
+                        binding.pbSourceLoading.visibility = View.INVISIBLE
+                    }
+                    is ViewState.Error -> {
+                        binding.pbSourceLoading.visibility = View.INVISIBLE
+                    }
                 }
             }
-            viewModel.getNewsSourceByCategory(source)
         }
     }
 
