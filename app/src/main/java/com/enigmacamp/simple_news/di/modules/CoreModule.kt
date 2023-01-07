@@ -1,4 +1,4 @@
-package com.enigmacamp.simple_news.di.app
+package com.enigmacamp.simple_news.di.modules
 
 import com.enigmacamp.simple_news.BuildConfig
 import com.enigmacamp.simple_news.data.api.NewsApi
@@ -11,7 +11,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
 @Module
-class AppModule {
+class CoreModule {
     @Singleton
     @Provides
     fun provideOkHttpClient(newsApiKeyInterceptor: NewsApiKeyInterceptor): OkHttpClient {

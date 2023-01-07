@@ -1,4 +1,4 @@
-package com.enigmacamp.simple_news.di.ui
+package com.enigmacamp.simple_news.di.modules
 
 import com.enigmacamp.simple_news.ui.MainActivity
 import com.enigmacamp.simple_news.ui.article.ArticleFragment

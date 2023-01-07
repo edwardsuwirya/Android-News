@@ -1,11 +1,27 @@
 package com.enigmacamp.simple_news
 
-import com.enigmacamp.simple_news.di.app.DaggerAppComponent
+
+import com.enigmacamp.simple_news.di.components.*
 import dagger.android.AndroidInjector
 import dagger.android.DaggerApplication
 
 class BaseApplication : DaggerApplication() {
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
-        return DaggerAppComponent.builder().application(this).build()
+        return DaggerAppComponent.builder().articleComponent(provideArticleComponent())
+            .newsSourceComponent(provideNewsSourceComponent()).build()
+//        TODO()
     }
+
+    private fun provideCoreComponent(): CoreComponent {
+        return DaggerCoreComponent.builder().build()
+    }
+
+    private fun provideArticleComponent(): ArticleComponent {
+        return DaggerArticleComponent.builder().coreComponent(provideCoreComponent()).build()
+    }
+
+    private fun provideNewsSourceComponent(): NewsSourceComponent {
+        return DaggerNewsSourceComponent.builder().coreComponent(provideCoreComponent()).build()
+    }
+
 }
