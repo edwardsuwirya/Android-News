@@ -5,10 +5,13 @@ import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.RequestManager
+import com.enigmacamp.simple_news.R
 import com.enigmacamp.simple_news.data.api.response.Article
 import com.enigmacamp.simple_news.databinding.ArticleViewHolderBinding
 
 class ArticleAdapter(
+    private val requestManager: RequestManager,
     private val cellClickListener: ArticleCellClickListener
 ) :
     PagingDataAdapter<Article, ArticleAdapter.ViewHolder>(ArticleComparator) {
@@ -30,8 +33,23 @@ class ArticleAdapter(
             tvArticleTitle.text = article.title
             tvArticleAuthor.text = article.author
             tvArticleDescription.text = article.description
+            tvPublished.text = article.publishedAt
+            if (article.urlToImage.isNotEmpty()) {
+                requestManager
+                    .load(article.urlToImage)
+                    .placeholder(R.drawable.img)
+                    .into(ivArticle)
+            } else {
+                requestManager.clear(ivArticle)
+                ivArticle.setImageDrawable(null)
+            }
+
             btnViewMoreArticle.setOnClickListener {
-                cellClickListener.onCellClickListener(article)
+                cellClickListener.onCellClickListener(article, true)
+            }
+
+            btnShare.setOnClickListener {
+                cellClickListener.onCellClickListener(article, false)
             }
         }
     }

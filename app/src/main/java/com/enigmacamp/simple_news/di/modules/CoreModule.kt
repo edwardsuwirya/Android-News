@@ -1,5 +1,8 @@
 package com.enigmacamp.simple_news.di.modules
 
+import android.app.Application
+import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
 import com.enigmacamp.simple_news.BuildConfig
 import com.enigmacamp.simple_news.data.api.NewsApi
 import com.enigmacamp.simple_news.data.api.interceptor.NewsApiKeyInterceptor
@@ -33,5 +36,10 @@ class CoreModule {
     @Provides
     fun provideAuthApi(retrofit: Retrofit): NewsApi {
         return retrofit.create(NewsApi::class.java)
+    }
+
+    @Provides
+    fun provideGlide(application: Application): RequestManager {
+        return Glide.with(application.applicationContext)
     }
 }

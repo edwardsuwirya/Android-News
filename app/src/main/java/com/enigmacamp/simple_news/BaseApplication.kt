@@ -7,13 +7,16 @@ import dagger.android.DaggerApplication
 
 class BaseApplication : DaggerApplication() {
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
-        return DaggerAppComponent.builder().articleComponent(provideArticleComponent())
-            .newsSourceComponent(provideNewsSourceComponent()).build()
+        return DaggerAppComponent.builder()
+            .articleComponent(provideArticleComponent())
+            .newsSourceComponent(provideNewsSourceComponent())
+            .coreComponent(provideCoreComponent())
+            .build()
 //        TODO()
     }
 
     private fun provideCoreComponent(): CoreComponent {
-        return DaggerCoreComponent.builder().build()
+        return DaggerCoreComponent.factory().application(this)
     }
 
     private fun provideArticleComponent(): ArticleComponent {

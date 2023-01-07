@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.RequestManager
 import com.enigmacamp.simple_news.data.api.response.Article
 import com.enigmacamp.simple_news.databinding.FragmentArticleBinding
 import com.enigmacamp.simple_news.ui.article.viewadapter.ArticleAdapter
@@ -31,7 +32,11 @@ import javax.inject.Inject
 class ArticleFragment : DaggerFragment(), ArticleCellClickListener {
     @Inject
     lateinit var viewModel: ArticleViewModel
-    private val adapter = ArticleAdapter(this)
+
+    @Inject
+    lateinit var requestManager: RequestManager
+
+    private lateinit var adapter: ArticleAdapter
     private lateinit var binding: FragmentArticleBinding
     private val safeArgs: ArticleFragmentArgs by navArgs()
 
@@ -48,6 +53,7 @@ class ArticleFragment : DaggerFragment(), ArticleCellClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        adapter = ArticleAdapter(requestManager, this)
         binding.apply {
             rvArticles.layoutManager = LinearLayoutManager(context)
             adapter.addLoadStateListener { loadState ->
@@ -86,20 +92,32 @@ class ArticleFragment : DaggerFragment(), ArticleCellClickListener {
 
     private fun subscribe() {
         lifecycleScope.launch {
-            viewModel.getArticleBySource(safeArgs.sourceId, null, null)
-                .observe(requireActivity()) {
-                    it?.let {
-                        adapter.submitData(lifecycle, it)
-                        adapter.notifyDataSetChanged()
-                    }
+            viewModel.getArticleBySource(safeArgs.sourceId, null, null).observe(requireActivity()) {
+                it?.let {
+                    adapter.submitData(lifecycle, it)
+                    adapter.notifyDataSetChanged()
                 }
+            }
         }
     }
 
-    override fun onCellClickListener(data: Article) {
-        val uri = Uri.parse(data.url)
-        val i = Intent(Intent.ACTION_VIEW, uri)
-        startActivity(i)
+    override fun onCellClickListener(data: Article, forView: Boolean) {
+        val intent: Intent
+        if (forView) {
+            val uri = Uri.parse(data.url)
+            intent = Intent(Intent.ACTION_VIEW, uri)
+        } else {
+            val i = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TITLE, data.title)
+                putExtra(Intent.EXTRA_TEXT, data.url)
+                type = "text/plain"
+            }
+            intent = Intent.createChooser(i, null)
+        }
+        startActivity(intent)
+
+
     }
 
     companion object {

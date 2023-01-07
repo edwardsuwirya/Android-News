@@ -26,6 +26,7 @@ interface NewsApi {
     @GET("sources")
     suspend fun getSourceByCategory(
         @Query("category") category: String,
+        @Query("language") language: String
     ): Response<NewsSourceResponse>
 
 }
