@@ -17,9 +17,11 @@ import com.enigmacamp.simple_news.data.api.response.Article
 import com.enigmacamp.simple_news.databinding.FragmentArticleBinding
 import com.enigmacamp.simple_news.ui.article.viewadapter.ArticleAdapter
 import com.enigmacamp.simple_news.ui.article.viewadapter.ArticleCellClickListener
+import com.enigmacamp.simple_news.utils.hideKeyboard
 import dagger.android.support.DaggerFragment
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 /**
  * A simple [Fragment] subclass.
@@ -49,7 +51,7 @@ class ArticleFragment : DaggerFragment(), ArticleCellClickListener {
         binding.apply {
             rvArticles.layoutManager = LinearLayoutManager(context)
             adapter.addLoadStateListener { loadState ->
-                when (loadState.append) {
+                when (loadState.refresh) {
                     is LoadState.Loading -> pbArticleLoading.visibility = View.VISIBLE
                     else -> {
                         pbArticleLoading.visibility = View.INVISIBLE
@@ -57,6 +59,18 @@ class ArticleFragment : DaggerFragment(), ArticleCellClickListener {
                 }
             }
             rvArticles.adapter = adapter
+
+            ibSearchArticle.setOnClickListener {
+                val keyword = binding.etArticle.text.toString()
+                hideKeyboard()
+                viewModel.getArticleBySource(safeArgs.sourceId, keyword, null)
+                    .observe(requireActivity()) {
+                        it?.let {
+                            adapter.submitData(lifecycle, it)
+                            adapter.notifyDataSetChanged()
+                        }
+                    }
+            }
         }
         initViewModel()
         subscribe()
@@ -72,12 +86,13 @@ class ArticleFragment : DaggerFragment(), ArticleCellClickListener {
 
     private fun subscribe() {
         lifecycleScope.launch {
-            viewModel.getArticleBySource(safeArgs.sourceId).observe(requireActivity()) {
-                it?.let {
-                    adapter.submitData(lifecycle, it)
-                    adapter.notifyDataSetChanged()
+            viewModel.getArticleBySource(safeArgs.sourceId, null, null)
+                .observe(requireActivity()) {
+                    it?.let {
+                        adapter.submitData(lifecycle, it)
+                        adapter.notifyDataSetChanged()
+                    }
                 }
-            }
         }
     }
 

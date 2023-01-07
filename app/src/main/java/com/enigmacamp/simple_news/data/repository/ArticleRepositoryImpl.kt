@@ -11,13 +11,15 @@ import javax.inject.Inject
 
 class ArticleRepositoryImpl @Inject constructor(private val newsApi: NewsApi) : ArticleRepository {
     override fun getBySourcePaging(
-        source: String,
+        source: String, keyword: String?,
+        searchIn: String?
     ): LiveData<PagingData<Article>> {
         return Pager(
             config = PagingConfig(pageSize = 15, enablePlaceholders = false, initialLoadSize = 2),
             pagingSourceFactory = {
-                ArticlePaging(source, newsApi)
+                ArticlePaging(source, keyword, searchIn, newsApi)
             }, initialKey = 1
         ).liveData
     }
+
 }

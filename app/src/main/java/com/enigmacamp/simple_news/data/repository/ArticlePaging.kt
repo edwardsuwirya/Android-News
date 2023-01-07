@@ -5,8 +5,15 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.enigmacamp.simple_news.data.api.NewsApi
 import com.enigmacamp.simple_news.data.api.response.Article
+import com.enigmacamp.simple_news.data.api.response.NewsResponse
+import retrofit2.Response
 
-class ArticlePaging(private val source: String, private val service: NewsApi) :
+class ArticlePaging(
+    private val source: String,
+    private val keyword: String?,
+    private val searchIn: String?,
+    private val service: NewsApi
+) :
     PagingSource<Int, Article>() {
     override fun getRefreshKey(state: PagingState<Int, Article>): Int? {
         return null
@@ -15,7 +22,20 @@ class ArticlePaging(private val source: String, private val service: NewsApi) :
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
         val pageNumber = params.key ?: 1
         return try {
-            val response = service.getTopHeadlineNews(source, pageNumber, 15)
+            val response: Response<NewsResponse>
+            if (keyword == null) {
+                response = service.getTopHeadlineNews(source, pageNumber, 15)
+            } else {
+                response = service
+                    .searchTopHeadlineNews(
+                        source,
+                        keyword,
+                        searchIn ?: "title,description",
+                        pageNumber,
+                        15
+                    )
+            }
+
             var nextKey: Int? = null
             if (response.isSuccessful) {
                 response.body()?.let {

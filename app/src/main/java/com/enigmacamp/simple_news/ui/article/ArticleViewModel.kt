@@ -7,8 +7,11 @@ import com.enigmacamp.simple_news.data.api.response.Article
 import com.enigmacamp.simple_news.data.repository.ArticleRepository
 import javax.inject.Inject
 
-class ArticleViewModel @Inject constructor(private val newsRepository: ArticleRepository) : ViewModel() {
-    fun getArticleBySource(sourceId: String): LiveData<PagingData<Article>> {
-        return newsRepository.getBySourcePaging(sourceId)
+class ArticleViewModel @Inject constructor(private val newsRepository: ArticleRepository) :
+    ViewModel() {
+    fun getArticleBySource(
+        sourceId: String, keyword: String?, searchIn: String?
+    ): LiveData<PagingData<Article>> {
+        return newsRepository.getBySourcePaging(sourceId, keyword, searchIn)
     }
 }

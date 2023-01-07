@@ -14,6 +14,15 @@ interface NewsApi {
         @Query("pageSize") pageSize: Int
     ): Response<NewsResponse>
 
+    @GET("everything")
+    suspend fun searchTopHeadlineNews(
+        @Query("sources") source: String,
+        @Query("q") keyword: String,
+        @Query("searchIn") searchIn: String,
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int
+    ): Response<NewsResponse>
+
     @GET("sources")
     suspend fun getSourceByCategory(
         @Query("category") category: String,

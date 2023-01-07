@@ -8,7 +8,7 @@
         android:id="@+id/tv_source_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
+        android:textSize="24sp"
         android:textStyle="bold" />
 
     <TextView
@@ -18,9 +18,11 @@
 
     <Button
         android:id="@+id/btn_view_article"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="View" />
+        android:text="View Articles"
+        android:textSize="12sp" />
 
     <Space
         android:layout_width="match_parent"

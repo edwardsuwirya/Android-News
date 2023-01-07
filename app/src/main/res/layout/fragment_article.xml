@@ -7,6 +7,17 @@
     android:layout_height="match_parent"
     tools:context=".ui.article.ArticleFragment">
 
+    <ImageButton
+        android:id="@+id/ib_search_article"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@android:color/transparent"
+        android:src="@android:drawable/ic_menu_search"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_articles"
         android:layout_width="0dp"
@@ -18,7 +29,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/et_article" />
 
     <ProgressBar
         android:id="@+id/pb_article_loading"
@@ -30,4 +41,19 @@
         app:layout_constraintEnd_toEndOf="@+id/rv_articles"
         app:layout_constraintStart_toStartOf="@+id/rv_articles"
         app:layout_constraintTop_toTopOf="@+id/rv_articles" />
+
+    <EditText
+        android:id="@+id/et_article"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Search"
+        app:layout_constraintEnd_toStartOf="@+id/ib_search_article"
+        app:layout_constraintHorizontal_bias="0.666"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
