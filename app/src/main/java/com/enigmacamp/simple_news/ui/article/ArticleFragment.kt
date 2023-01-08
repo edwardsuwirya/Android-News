@@ -18,6 +18,7 @@ import com.enigmacamp.simple_news.data.api.response.Article
 import com.enigmacamp.simple_news.databinding.FragmentArticleBinding
 import com.enigmacamp.simple_news.ui.article.viewadapter.ArticleAdapter
 import com.enigmacamp.simple_news.ui.article.viewadapter.ArticleCellClickListener
+import com.enigmacamp.simple_news.utils.Dialog
 import com.enigmacamp.simple_news.utils.hideKeyboard
 import dagger.android.support.DaggerFragment
 import kotlinx.coroutines.launch
@@ -56,11 +57,12 @@ class ArticleFragment : DaggerFragment(), ArticleCellClickListener {
         adapter = ArticleAdapter(requestManager, this)
         binding.apply {
             rvArticles.layoutManager = LinearLayoutManager(context)
+            val dialog = Dialog(requireActivity())
             adapter.addLoadStateListener { loadState ->
                 when (loadState.refresh) {
-                    is LoadState.Loading -> pbArticleLoading.visibility = View.VISIBLE
+                    is LoadState.Loading -> dialog.show()
                     else -> {
-                        pbArticleLoading.visibility = View.INVISIBLE
+                        dialog.dismiss()
                     }
                 }
             }
@@ -70,7 +72,7 @@ class ArticleFragment : DaggerFragment(), ArticleCellClickListener {
                 val keyword = binding.etArticle.text.toString()
                 hideKeyboard()
                 viewModel.getArticleBySource(safeArgs.sourceId, keyword, null)
-                    .observe(requireActivity()) {
+                    .observe(viewLifecycleOwner) {
                         it?.let {
                             adapter.submitData(lifecycle, it)
                             adapter.notifyDataSetChanged()
@@ -92,7 +94,7 @@ class ArticleFragment : DaggerFragment(), ArticleCellClickListener {
 
     private fun subscribe() {
         lifecycleScope.launch {
-            viewModel.getArticleBySource(safeArgs.sourceId, null, null).observe(requireActivity()) {
+            viewModel.getArticleBySource(safeArgs.sourceId, null, null).observe(viewLifecycleOwner) {
                 it?.let {
                     adapter.submitData(lifecycle, it)
                     adapter.notifyDataSetChanged()

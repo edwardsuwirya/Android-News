@@ -31,17 +31,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_article" />
 
-    <ProgressBar
-        android:id="@+id/pb_article_loading"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/rv_articles"
-        app:layout_constraintEnd_toEndOf="@+id/rv_articles"
-        app:layout_constraintStart_toStartOf="@+id/rv_articles"
-        app:layout_constraintTop_toTopOf="@+id/rv_articles" />
-
     <EditText
         android:id="@+id/et_article"
         android:layout_width="0dp"
@@ -56,4 +45,5 @@
         app:layout_constraintHorizontal_bias="0.666"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

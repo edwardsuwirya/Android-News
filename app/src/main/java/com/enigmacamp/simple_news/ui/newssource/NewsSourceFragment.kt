@@ -1,6 +1,7 @@
 package com.enigmacamp.simple_news.ui.newssource
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import com.enigmacamp.simple_news.databinding.FragmentNewsSourceBinding
 import com.enigmacamp.simple_news.ui.MainActivity
 import com.enigmacamp.simple_news.ui.newssource.viewadapter.NewsSourceCellClickListener
 import com.enigmacamp.simple_news.ui.newssource.viewadapter.NewsSourceViewAdapter
+import com.enigmacamp.simple_news.utils.Dialog
 import com.enigmacamp.simple_news.utils.ViewState
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
@@ -31,7 +33,7 @@ class NewsSourceFragment : DaggerFragment(), NewsSourceCellClickListener {
     private val adapter = NewsSourceViewAdapter(this)
     private lateinit var binding: FragmentNewsSourceBinding
     private val safeArgs: NewsSourceFragmentArgs by navArgs()
-
+    private lateinit var dialog: Dialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (requireActivity() as AppCompatActivity).supportActionBar?.title =
@@ -47,6 +49,7 @@ class NewsSourceFragment : DaggerFragment(), NewsSourceCellClickListener {
         val activity = activity as? MainActivity
         activity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
         activity?.supportActionBar?.setHomeButtonEnabled(true)
+        dialog = Dialog(requireActivity())
         return binding.root
     }
 
@@ -56,6 +59,7 @@ class NewsSourceFragment : DaggerFragment(), NewsSourceCellClickListener {
             rvSources.layoutManager = LinearLayoutManager(context)
             rvSources.adapter = adapter
         }
+        Log.d("News-Source", "View created")
         initViewModel()
         subscribe()
         viewModel.getNewsSourceByCategory(safeArgs.category)
@@ -71,21 +75,24 @@ class NewsSourceFragment : DaggerFragment(), NewsSourceCellClickListener {
     }
 
     private fun subscribe() {
-        viewModel.sources.observe(requireActivity()) {
+        viewModel.sources.observe(viewLifecycleOwner) {
             it?.let {
                 when (it) {
                     is ViewState.Loading -> {
-                        binding.pbSourceLoading.visibility = View.VISIBLE
+                        Log.d("News-Source", "Loading")
+                        dialog.show()
                     }
                     is ViewState.Success -> {
                         it.data?.let { data ->
                             adapter.submitData(data)
                             adapter.notifyDataSetChanged()
                         }
-                        binding.pbSourceLoading.visibility = View.INVISIBLE
+                        Log.d("News-Source", "Success")
+                        dialog.dismiss()
                     }
                     is ViewState.Error -> {
-                        binding.pbSourceLoading.visibility = View.INVISIBLE
+                        Log.d("News-Source", it.errorMessage.toString())
+                        dialog.dismiss()
                     }
                 }
             }
