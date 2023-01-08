@@ -1,4 +1,4 @@
-package com.enigmacamp.simple_news.ui.newssource.viewadapter
+package com.enigmacamp.simple_news.ui.newssource
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,12 +6,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.enigmacamp.simple_news.data.api.response.Source
 import com.enigmacamp.simple_news.databinding.SourcesViewHolderBinding
 
-class NewsSourceViewAdapter(private val cellClick: NewsSourceCellClickListener) :
+class NewsSourceViewAdapter(private val onCellClick: ((Source) -> Unit)) :
     RecyclerView.Adapter<NewsSourceViewAdapter.ViewHolder>() {
     private var sources: MutableList<Source> = mutableListOf()
 
     inner class ViewHolder(val binding: SourcesViewHolderBinding) :
-        RecyclerView.ViewHolder(binding.root)
+        RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.btnViewArticle.setOnClickListener {
+                onCellClick.invoke(sources[bindingAdapterPosition])
+            }
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
@@ -26,9 +32,6 @@ class NewsSourceViewAdapter(private val cellClick: NewsSourceCellClickListener) 
         holder.binding.apply {
             tvSourceName.text = source.name
             tvSourceDescription.text = source.description
-            btnViewArticle.setOnClickListener {
-                cellClick.onCellClickListener(source)
-            }
         }
     }
 

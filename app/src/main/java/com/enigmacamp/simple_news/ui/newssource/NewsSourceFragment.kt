@@ -15,8 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.enigmacamp.simple_news.data.api.response.Source
 import com.enigmacamp.simple_news.databinding.FragmentNewsSourceBinding
 import com.enigmacamp.simple_news.ui.MainActivity
-import com.enigmacamp.simple_news.ui.newssource.viewadapter.NewsSourceCellClickListener
-import com.enigmacamp.simple_news.ui.newssource.viewadapter.NewsSourceViewAdapter
 import com.enigmacamp.simple_news.utils.Dialog
 import com.enigmacamp.simple_news.utils.ViewState
 import dagger.android.support.DaggerFragment
@@ -27,10 +25,10 @@ import javax.inject.Inject
  * Use the [NewsSourceFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class NewsSourceFragment : DaggerFragment(), NewsSourceCellClickListener {
+class NewsSourceFragment : DaggerFragment() {
     @Inject
     lateinit var viewModel: NewsSourceViewModel
-    private val adapter = NewsSourceViewAdapter(this)
+    private lateinit var adapter: NewsSourceViewAdapter
     private lateinit var binding: FragmentNewsSourceBinding
     private val safeArgs: NewsSourceFragmentArgs by navArgs()
     private lateinit var dialog: Dialog
@@ -49,6 +47,9 @@ class NewsSourceFragment : DaggerFragment(), NewsSourceCellClickListener {
         val activity = activity as? MainActivity
         activity?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
         activity?.supportActionBar?.setHomeButtonEnabled(true)
+        adapter = NewsSourceViewAdapter {
+            onNavigateToArticle(it)
+        }
         dialog = Dialog(requireActivity())
         return binding.root
     }
@@ -99,7 +100,7 @@ class NewsSourceFragment : DaggerFragment(), NewsSourceCellClickListener {
         }
     }
 
-    override fun onCellClickListener(data: Source) {
+    fun onNavigateToArticle(data: Source) {
         val directions =
             NewsSourceFragmentDirections.actionNewsSourceFragmentToArticleFragment(sourceId = data.id)
         findNavController().navigate(directions)

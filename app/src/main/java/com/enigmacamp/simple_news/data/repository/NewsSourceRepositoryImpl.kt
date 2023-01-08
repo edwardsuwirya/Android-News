@@ -1,5 +1,6 @@
 package com.enigmacamp.simple_news.data.repository
 
+import android.util.Log
 import com.enigmacamp.simple_news.data.api.NewsApi
 import com.enigmacamp.simple_news.data.api.response.Source
 import javax.inject.Inject
@@ -14,10 +15,12 @@ class NewsSourceRepositoryImpl @Inject constructor(private val newsApi: NewsApi)
                 response.body().let {
                     return response.body()!!.sources
                 }
+            } else {
+                throw Exception("Request can not be processed")
             }
-            return emptyList()
         } catch (e: Exception) {
-            throw Exception("Server Error")
+            e.message?.let { Log.d("News-API", it) }
+            throw Exception(e.message)
         }
     }
 }

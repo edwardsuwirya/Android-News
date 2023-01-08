@@ -1,4 +1,4 @@
-package com.enigmacamp.simple_news.ui.article.viewadapter
+package com.enigmacamp.simple_news.ui.article
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -12,12 +12,30 @@ import com.enigmacamp.simple_news.databinding.ArticleViewHolderBinding
 
 class ArticleAdapter(
     private val requestManager: RequestManager,
-    private val cellClickListener: ArticleCellClickListener
+    private val onCellClick: ((Article, Boolean) -> Unit)
 ) :
     PagingDataAdapter<Article, ArticleAdapter.ViewHolder>(ArticleComparator) {
 
     inner class ViewHolder(val binding: ArticleViewHolderBinding) :
-        RecyclerView.ViewHolder(binding.root)
+        RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.btnViewMoreArticle.setOnClickListener {
+                getItem(bindingAdapterPosition)?.let { article ->
+                    onCellClick.invoke(
+                        article,
+                        true
+                    )
+                }
+            }
+            binding.btnShare.setOnClickListener {
+                getItem(bindingAdapterPosition)?.let { article ->
+                    onCellClick.invoke(
+                        article, false
+                    )
+                }
+            }
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
@@ -42,14 +60,6 @@ class ArticleAdapter(
             } else {
                 requestManager.clear(ivArticle)
                 ivArticle.setImageDrawable(null)
-            }
-
-            btnViewMoreArticle.setOnClickListener {
-                cellClickListener.onCellClickListener(article, true)
-            }
-
-            btnShare.setOnClickListener {
-                cellClickListener.onCellClickListener(article, false)
             }
         }
     }

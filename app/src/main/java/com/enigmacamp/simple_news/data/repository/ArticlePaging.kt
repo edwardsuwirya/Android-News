@@ -22,11 +22,10 @@ class ArticlePaging(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
         val pageNumber = params.key ?: 1
         return try {
-            val response: Response<NewsResponse>
-            if (keyword == null) {
-                response = service.getTopHeadlineNews(source, pageNumber, 15)
+            val response: Response<NewsResponse> = if (keyword == null) {
+                service.getTopHeadlineNews(source, pageNumber, 15)
             } else {
-                response = service
+                service
                     .searchTopHeadlineNews(
                         source,
                         keyword,
@@ -46,6 +45,8 @@ class ArticlePaging(
                     }
                 }
                 Log.d("Next key Article", nextKey.toString())
+            } else {
+                throw Exception("Request can not be processed")
             }
             return LoadResult.Page(
                 data = response.body()!!.articles,
@@ -53,7 +54,7 @@ class ArticlePaging(
                 nextKey = nextKey
             )
         } catch (e: Exception) {
-            e.message?.let { Log.d("Error Exception", it) }
+            e.message?.let { Log.d("News-API", it) }
             LoadResult.Error(e)
         }
     }

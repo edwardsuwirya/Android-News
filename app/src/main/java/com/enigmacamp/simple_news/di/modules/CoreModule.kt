@@ -9,6 +9,7 @@ import com.enigmacamp.simple_news.data.api.interceptor.NewsApiKeyInterceptor
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
@@ -18,8 +19,11 @@ class CoreModule {
     @Singleton
     @Provides
     fun provideOkHttpClient(newsApiKeyInterceptor: NewsApiKeyInterceptor): OkHttpClient {
+        val httpLogging = HttpLoggingInterceptor()
+        httpLogging.setLevel(HttpLoggingInterceptor.Level.BASIC)
         return OkHttpClient.Builder()
             .addInterceptor(newsApiKeyInterceptor)
+            .addInterceptor(httpLogging)
             .build()
     }
 

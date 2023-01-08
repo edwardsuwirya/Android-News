@@ -16,8 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.RequestManager
 import com.enigmacamp.simple_news.data.api.response.Article
 import com.enigmacamp.simple_news.databinding.FragmentArticleBinding
-import com.enigmacamp.simple_news.ui.article.viewadapter.ArticleAdapter
-import com.enigmacamp.simple_news.ui.article.viewadapter.ArticleCellClickListener
 import com.enigmacamp.simple_news.utils.Dialog
 import com.enigmacamp.simple_news.utils.hideKeyboard
 import dagger.android.support.DaggerFragment
@@ -30,7 +28,7 @@ import javax.inject.Inject
  * Use the [ArticleFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ArticleFragment : DaggerFragment(), ArticleCellClickListener {
+class ArticleFragment : DaggerFragment() {
     @Inject
     lateinit var viewModel: ArticleViewModel
 
@@ -54,7 +52,9 @@ class ArticleFragment : DaggerFragment(), ArticleCellClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = ArticleAdapter(requestManager, this)
+        adapter = ArticleAdapter(requestManager) { article, forView ->
+            onCellClickListener(article, forView)
+        }
         binding.apply {
             rvArticles.layoutManager = LinearLayoutManager(context)
             val dialog = Dialog(requireActivity())
@@ -94,16 +94,17 @@ class ArticleFragment : DaggerFragment(), ArticleCellClickListener {
 
     private fun subscribe() {
         lifecycleScope.launch {
-            viewModel.getArticleBySource(safeArgs.sourceId, null, null).observe(viewLifecycleOwner) {
-                it?.let {
-                    adapter.submitData(lifecycle, it)
-                    adapter.notifyDataSetChanged()
+            viewModel.getArticleBySource(safeArgs.sourceId, null, null)
+                .observe(viewLifecycleOwner) {
+                    it?.let {
+                        adapter.submitData(lifecycle, it)
+                        adapter.notifyDataSetChanged()
+                    }
                 }
-            }
         }
     }
 
-    override fun onCellClickListener(data: Article, forView: Boolean) {
+    private fun onCellClickListener(data: Article, forView: Boolean) {
         val intent: Intent
         if (forView) {
             val uri = Uri.parse(data.url)
