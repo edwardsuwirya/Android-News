@@ -8,7 +8,7 @@ import dagger.Module
 
 @Module
 abstract class NewsSourceModule {
-    @NewsSourceScope
     @Binds
+    @NewsSourceScope
     abstract fun bindsNewsSourceModule(newsSourceRepositoryImpl: NewsSourceRepositoryImpl): NewsSourceRepository
 }

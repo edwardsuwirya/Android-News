@@ -8,7 +8,7 @@ import dagger.Module
 
 @Module
 abstract class ArticleModule {
-    @ArticleScope
     @Binds
+    @ArticleScope
     abstract fun bindsArticleModule(articleRepositoryImpl: ArticleRepositoryImpl): ArticleRepository
 }

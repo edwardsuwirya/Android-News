@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -29,6 +28,8 @@ import javax.inject.Inject
  */
 class NewsSourceFragment : DaggerFragment() {
     @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
     lateinit var viewModel: NewsSourceViewModel
     private lateinit var adapter: NewsSourceViewAdapter
     private lateinit var binding: FragmentNewsSourceBinding
@@ -86,11 +87,8 @@ class NewsSourceFragment : DaggerFragment() {
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(requireActivity(), object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return viewModel as T
-            }
-        })[NewsSourceViewModel::class.java]
+        viewModel =
+            ViewModelProvider(requireActivity(), viewModelFactory)[NewsSourceViewModel::class.java]
     }
 
     private fun subscribe() {

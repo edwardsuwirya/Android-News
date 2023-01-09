@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
@@ -32,6 +31,7 @@ import javax.inject.Inject
  */
 class ArticleFragment : DaggerFragment() {
     @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
     lateinit var viewModel: ArticleViewModel
 
     @Inject
@@ -77,11 +77,8 @@ class ArticleFragment : DaggerFragment() {
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(requireActivity(), object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return viewModel as T
-            }
-        })[ArticleViewModel::class.java]
+        viewModel =
+            ViewModelProvider(requireActivity(), viewModelFactory)[ArticleViewModel::class.java]
     }
 
     private fun subscribe() {

@@ -10,7 +10,6 @@ import dagger.android.AndroidInjector
 @ActivityScope
 @Component(
     modules = [AndroidInjectionModule::class, ActivitiesModule::class],
-    dependencies = [NewsSourceComponent::class, ArticleComponent::class, CoreComponent::class]
+    dependencies = [CoreComponent::class, ViewModelComponent::class]
 )
-interface AppComponent : AndroidInjector<BaseApplication> {
-}
+interface AppComponent : AndroidInjector<BaseApplication>
