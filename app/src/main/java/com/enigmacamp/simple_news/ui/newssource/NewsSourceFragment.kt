@@ -17,6 +17,8 @@ import com.enigmacamp.simple_news.databinding.FragmentNewsSourceBinding
 import com.enigmacamp.simple_news.ui.MainActivity
 import com.enigmacamp.simple_news.utils.Dialog
 import com.enigmacamp.simple_news.utils.ViewState
+import com.enigmacamp.simple_news.utils.isNetworkOnline
+import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
@@ -37,7 +39,6 @@ class NewsSourceFragment : DaggerFragment() {
         (requireActivity() as AppCompatActivity).supportActionBar?.title =
             safeArgs.category.uppercase()
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,12 +61,29 @@ class NewsSourceFragment : DaggerFragment() {
             rvSources.layoutManager = LinearLayoutManager(context)
             rvSources.adapter = adapter
         }
-        Log.d("News-Source", "View created")
+//        Log.d("News-Source", "View created")
         initViewModel()
         subscribe()
-        viewModel.getNewsSourceByCategory(safeArgs.category)
+        getNewsSource()
     }
 
+    private fun getNewsSource() {
+        if (requireActivity().isNetworkOnline()) {
+            binding.apply {
+                btnRetry.visibility = View.GONE
+            }
+            viewModel.getNewsSourceByCategory(safeArgs.category)
+        } else {
+//            Log.d("News-Source", "Offline")
+            binding.apply {
+                btnRetry.visibility = View.VISIBLE
+                btnRetry.setOnClickListener {
+                    getNewsSource()
+                }
+            }
+            Snackbar.make(requireView(), "Offine", Snackbar.LENGTH_LONG).show()
+        }
+    }
 
     private fun initViewModel() {
         viewModel = ViewModelProvider(requireActivity(), object : ViewModelProvider.Factory {
@@ -100,7 +118,7 @@ class NewsSourceFragment : DaggerFragment() {
         }
     }
 
-    fun onNavigateToArticle(data: Source) {
+    private fun onNavigateToArticle(data: Source) {
         val directions =
             NewsSourceFragmentDirections.actionNewsSourceFragmentToArticleFragment(sourceId = data.id)
         findNavController().navigate(directions)

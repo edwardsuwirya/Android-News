@@ -18,6 +18,8 @@ import com.enigmacamp.simple_news.data.api.response.Article
 import com.enigmacamp.simple_news.databinding.FragmentArticleBinding
 import com.enigmacamp.simple_news.utils.Dialog
 import com.enigmacamp.simple_news.utils.hideKeyboard
+import com.enigmacamp.simple_news.utils.isNetworkOnline
+import com.google.android.material.snackbar.Snackbar
 import dagger.android.support.DaggerFragment
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -38,10 +40,6 @@ class ArticleFragment : DaggerFragment() {
     private lateinit var adapter: ArticleAdapter
     private lateinit var binding: FragmentArticleBinding
     private val safeArgs: ArticleFragmentArgs by navArgs()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -67,17 +65,11 @@ class ArticleFragment : DaggerFragment() {
                 }
             }
             rvArticles.adapter = adapter
-
             ibSearchArticle.setOnClickListener {
                 val keyword = binding.etArticle.text.toString()
+                viewModel.keyword = keyword
                 hideKeyboard()
-                viewModel.getArticleBySource(safeArgs.sourceId, keyword, null)
-                    .observe(viewLifecycleOwner) {
-                        it?.let {
-                            adapter.submitData(lifecycle, it)
-                            adapter.notifyDataSetChanged()
-                        }
-                    }
+                subscribe()
             }
         }
         initViewModel()
@@ -93,14 +85,25 @@ class ArticleFragment : DaggerFragment() {
     }
 
     private fun subscribe() {
-        lifecycleScope.launch {
-            viewModel.getArticleBySource(safeArgs.sourceId, null, null)
-                .observe(viewLifecycleOwner) {
-                    it?.let {
-                        adapter.submitData(lifecycle, it)
-                        adapter.notifyDataSetChanged()
+        if (requireActivity().isNetworkOnline()) {
+            binding.btnArticleRetry.visibility = View.GONE
+            lifecycleScope.launch {
+                viewModel.getArticleBySource(safeArgs.sourceId, viewModel.keyword, null)
+                    .observe(viewLifecycleOwner) {
+                        it?.let {
+                            adapter.submitData(lifecycle, it)
+                            adapter.notifyDataSetChanged()
+                        }
                     }
+            }
+        } else {
+            binding.apply {
+                btnArticleRetry.visibility = View.VISIBLE
+                btnArticleRetry.setOnClickListener {
+                    subscribe()
                 }
+            }
+            Snackbar.make(requireView(), "Offine", Snackbar.LENGTH_LONG).show()
         }
     }
 
@@ -119,8 +122,11 @@ class ArticleFragment : DaggerFragment() {
             intent = Intent.createChooser(i, null)
         }
         startActivity(intent)
+    }
 
-
+    override fun onDetach() {
+        super.onDetach()
+        viewModel.keyword = null
     }
 
     companion object {

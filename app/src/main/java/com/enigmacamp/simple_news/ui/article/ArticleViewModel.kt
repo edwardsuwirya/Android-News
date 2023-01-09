@@ -9,6 +9,8 @@ import javax.inject.Inject
 
 class ArticleViewModel @Inject constructor(private val newsRepository: ArticleRepository) :
     ViewModel() {
+    var keyword: String? = null
+
     fun getArticleBySource(
         sourceId: String, keyword: String?, searchIn: String?
     ): LiveData<PagingData<Article>> {
